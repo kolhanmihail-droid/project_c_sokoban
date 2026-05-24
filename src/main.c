@@ -1,46 +1,55 @@
+#include <SDL2/SDL.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include "../include/logika_gry.h"
 #include "../include/operacje_plikowe.h"
+#include "../include/gui.h"
 
-int main() {
+// SDL wymaga specyficznego zapisu funkcji main
+int main(int argc, char* argv[]) {
     GameState game;
+    
     if (!wczytajMape(&game, "assets/level1.txt")) {
         return 1;
     }
 
-    int gramy = 1;
-    char wejscie;
-
-    while (gramy) {
-        // Czyszczenie ekranu (komenda "cls" w Windows, w Linuksie to "clear")
-        system("cls"); 
-        
-        printf("Sokoban - Wersja Konsolowa\n");
-        printf("Ruch: W, A, S, D, Z-cofanie | Wyjscie: Q\n\n");
-
-        // Rysowanie planszy
-        for (int i = 0; i < game.height; i++) {
-            for (int j = 0; j < game.width; j++) {
-                printf("%c", game.map[i][j]);
-            }
-            printf("\n");
-        }
-
-        // Pobranie ruchu od gracza (spacja przed %c zjada niechciane Entery)
-        printf("\nTwoj ruch: ");
-        scanf(" %c", &wejscie);
-
-        // Rozpoznawanie klawiszy
-        if (wejscie == 'w' || wejscie == 'W') movePlayer(&game, 0, -1);
-        if (wejscie == 's' || wejscie == 'S') movePlayer(&game, 0, 1);
-        if (wejscie == 'a' || wejscie == 'A') movePlayer(&game, -1, 0);
-        if (wejscie == 'd' || wejscie == 'D') movePlayer(&game, 1, 0);
-        if (wejscie == 'z' || wejscie == 'Z') undoMove(&game); // Cofanie ruchu
-        if (wejscie == 'q' || wejscie == 'Q') gramy = 0; // Wyjscie z pętli
+    if (!initGUI(game.width, game.height)) {
+        printf("Brak bibliotek GUI!\n");
+        return 1;
     }
 
+    int gramy = 1;
+    SDL_Event event;
+
+    // Glowna petla gry
+    while (gramy) {
+        renderGame(&game);
+
+        // Oczekiwanie i lapanie wcisnietych klawiszy przez SDL
+        while (SDL_PollEvent(&event)) {
+            // Zamkniecie okna krzyzykiem (X)
+            if (event.type == SDL_QUIT) {
+                gramy = 0;
+            } 
+            // Klawiatura
+            else if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
+                    case SDLK_w:
+                    case SDLK_UP:    movePlayer(&game, 0, -1); break;
+                    case SDLK_s:
+                    case SDLK_DOWN:  movePlayer(&game, 0, 1); break;
+                    case SDLK_a:
+                    case SDLK_LEFT:  movePlayer(&game, -1, 0); break;
+                    case SDLK_d:
+                    case SDLK_RIGHT: movePlayer(&game, 1, 0); break;
+                    case SDLK_z:     undoMove(&game); break;
+                    case SDLK_q:
+                    case SDLK_ESCAPE: gramy = 0; break;
+                }
+            }
+        }
+    }
+
+    closeGUI();
     freeGame(&game);
-    printf("Dzieki za gre!\n");
     return 0;
 }
