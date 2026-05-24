@@ -17,7 +17,7 @@ int main() {
         system("cls"); 
         
         printf("Sokoban - Wersja Konsolowa\n");
-        printf("Ruch: W, A, S, D | Wyjscie: Q\n\n");
+        printf("Ruch: W, A, S, D, Z-cofanie | Wyjscie: Q\n\n");
 
         // Rysowanie planszy
         for (int i = 0; i < game.height; i++) {
@@ -36,6 +36,7 @@ int main() {
         if (wejscie == 's' || wejscie == 'S') movePlayer(&game, 0, 1);
         if (wejscie == 'a' || wejscie == 'A') movePlayer(&game, -1, 0);
         if (wejscie == 'd' || wejscie == 'D') movePlayer(&game, 1, 0);
+        if (wejscie == 'z' || wejscie == 'Z') undoMove(&game); // Cofanie ruchu
         if (wejscie == 'q' || wejscie == 'Q') gramy = 0; // Wyjscie z pętli
     }
 
