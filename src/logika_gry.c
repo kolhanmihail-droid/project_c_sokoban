@@ -9,26 +9,26 @@ void initGame(GameState *state, int w, int h) {
     state->player_x = 0;
     state->player_y = 0;
 
-    // 1. Alokacja wierszy (tablica wskaznikow)
+    // Alokacja wierszy (tablica wskaznikow)
     state->map = (char **)malloc(h * sizeof(char *));
     if (state->map == NULL) {
         printf("Blad: Brak pamieci na mape!\n");
-        exit(1); // Brutalne wyjscie w przypadku bledu krytycznego
+        exit(1); // w przypadku bledu krytycznego
     }
 
-    // 2. Alokacja kolumn dla kazdego wiersza
+    // Alokacja kolumn dla kazdego wiersza
     for (int i = 0; i < h; i++) {
         state->map[i] = (char *)malloc(w * sizeof(char));
         if (state->map[i] == NULL) {
             printf("Blad: Brak pamieci na wiersz %d!\n", i);
             exit(1);
         }
-        // Wypelnienie mapy pustymi polami (spacja)
+        // Wypelnienie mapy pustymi spacjami
         for (int j = 0; j < w; j++) {
             state->map[i][j] = ' ';
         }
     }
-    state->history = NULL; // Na starcie lista historii jest pusta
+    state->history = NULL; // Na starcie historia jest pusta
     printf("Sukces: Zaalokowano pamiec na mape %dx%d.\n", w, h);
 }
 
@@ -39,7 +39,7 @@ void freeGame(GameState *state) {
         state->history = state->history->next;
         free(temp);
     }
-    // Zwalnianie idzie w odwrotnej kolejnosci - najpierw wiersze, potem glowna tablica
+    // Zwalnianie idzie w odwrotnej kolejnosci 
     for (int i = 0; i < state->height; i++) {
         free(state->map[i]); 
     }
@@ -95,11 +95,11 @@ void undoMove(GameState *state) {
 
     MoveNode *node = state->history;
 
-    // 1. Gracz schodzi z obecnego pola do tylu
+    // Gracz schodzi z obecnego pola do tylu
     char current_cell = state->map[state->player_y][state->player_x];
     state->map[state->player_y][state->player_x] = (current_cell == '+') ? '.' : ' ';
 
-    // 2. Gracz wraca na poprzednie pole
+    // Gracz wraca na poprzednie pole
     int prev_x = state->player_x - node->dx;
     int prev_y = state->player_y - node->dy;
     char prev_target = state->map[prev_y][prev_x];
@@ -108,7 +108,7 @@ void undoMove(GameState *state) {
     state->player_x = prev_x;
     state->player_y = prev_y;
 
-    // 3. Cofanie skrzyni (jesli byla popchnieta)
+    // Cofanie skrzyni (jesli byla popchnieta)
     if (node->pushed_box) {
         int box_current_x = state->player_x + 2 * node->dx;
         int box_current_y = state->player_y + 2 * node->dy;

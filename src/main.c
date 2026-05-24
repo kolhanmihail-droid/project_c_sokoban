@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
                     case SDLK_z:     undoMove(&game); logAction("Cofniecie ruchu (Undo)"); break;
                     case SDLK_F5:    zapiszGre(&game, "saves/zapis.txt"); break;
                     
-                    // NOWE: Restart poziomu
+                    // Restart poziomu
                     case SDLK_r:     
                         freeGame(&game);
                         wczytajMape(&game, poziomy[aktualny_poziom]);
@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
                         logAction("Zresetowano poziom.");
                         break;
                     
-                    // NOWE: Nastepny poziom
+                    // Nastepny poziom
                     case SDLK_n:     
                         aktualny_poziom++;
                         if (aktualny_poziom >= max_poziomy) {
