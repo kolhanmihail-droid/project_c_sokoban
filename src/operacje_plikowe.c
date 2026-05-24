@@ -10,20 +10,46 @@ int wczytajMape(GameState *state, const char *filename) {
         return 0;
     }
 
-    // Dla uproszczenia w trybie turbo zakladamy staly rozmiar na ten moment 5x5
-    // Zwalniamy ewentualna stara pamiec i alokujemy nowa
-    initGame(state, 5, 5);
-
+    // 1. SKANOWANIE PLIKU: Szukamy szerokosci i wysokosci
+    int w = 0;
+    int h = 0;
     char buffer[256];
+
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        h++; // Kazda linijka to nowy wiersz
+        int len = 0;
+        // Liczymy znaki do momentu napotkania konca linii (Entera)
+        while (buffer[len] != '\0' && buffer[len] != '\n' && buffer[len] != '\r') {
+            len++;
+        }
+        if (len > w) {
+            w = len; // Zapisujemy najdluzszy wiersz jako szerokosc mapy
+        }
+    }
+
+    // 2. ALOKACJA PAMIECI
+    initGame(state, w, h);
+
+    // 3. WCZYTYWANIE MAPY: Cofamy plik na poczatek i czytamy na gotowo
+    rewind(file); 
     int row = 0;
 
-    // Czytamy plik linijka po linijce
     while (fgets(buffer, sizeof(buffer), file) != NULL && row < state->height) {
         for (int col = 0; col < state->width; col++) {
-            state->map[row][col] = buffer[col];
+            char c = buffer[col];
             
-            // Jesli znalezlismy gracza, zapisujemy jego pozycje
-            if (buffer[col] == '@') {
+            // Zabezpieczenie przed krotkimi liniami w pliku tekstowym
+            if (c == '\n' || c == '\r' || c == '\0') {
+                for (int k = col; k < state->width; k++) {
+                    state->map[row][k] = ' '; // Wypelnij reszte pusta przestrzenia
+                }
+                break;
+            }
+
+            state->map[row][col] = c;
+            
+            // Szukamy gracza
+            if (c == '@' || c == '+') {
                 state->player_x = col;
                 state->player_y = row;
             }
@@ -37,7 +63,7 @@ int wczytajMape(GameState *state, const char *filename) {
 
 // Funkcja zapisujaca obecny stan mapy do pliku
 void zapiszGre(GameState *state, const char *filename) {
-    FILE *file = fopen(filename, "w"); // "w" oznacza write (zapisz/nadpisz)
+    FILE *file = fopen(filename, "w");
     if (file == NULL) {
         printf("BLAD: Nie mozna zapisac gry do pliku %s!\n", filename);
         return;
@@ -51,13 +77,11 @@ void zapiszGre(GameState *state, const char *filename) {
     }
 
     fclose(file);
-    printf("SUKCES: Gra zostala zapisana w %s\n", filename);
-    logAction("Gracz zapisal stan gry."); // Automatyczny log
+    logAction("Gracz zapisal stan gry.");
 }
 
-// Funkcja dopisujaca logi z gry (np. bledy lub dzialania)
+// Funkcja dopisujaca logi z gry
 void logAction(const char *message) {
-    // "a" oznacza append (dopisz na koncu pliku)
     FILE *file = fopen("logs/historia.log", "a"); 
     if (file != NULL) {
         fprintf(file, "[LOG]: %s\n", message);

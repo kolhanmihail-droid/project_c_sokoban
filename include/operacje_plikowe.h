@@ -8,5 +8,5 @@ int wczytajMape(GameState *state, const char *filename);
 
 void zapiszGre(GameState *state, const char *filename);
 void logAction(const char *message);
-
+void resizeWindow(int width, int height);
 #endif

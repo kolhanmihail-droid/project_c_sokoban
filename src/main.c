@@ -53,6 +53,7 @@ int main(int argc, char* argv[]) {
                     case SDLK_r:     
                         freeGame(&game);
                         wczytajMape(&game, poziomy[aktualny_poziom]);
+                        resizeWindow(game.width, game.height); // ROZCIAGNIECIE OKNA
                         logAction("Zresetowano poziom.");
                         break;
                     
@@ -65,10 +66,10 @@ int main(int argc, char* argv[]) {
                         } else {
                             freeGame(&game);
                             wczytajMape(&game, poziomy[aktualny_poziom]);
+                            resizeWindow(game.width, game.height); // ROZCIAGNIECIE OKNA
                             logAction("Przejscie do nastepnego poziomu.");
                         }
                         break;
-
                     case SDLK_q:
                     case SDLK_ESCAPE: gramy = 0; logAction("Zamkniecie gry."); break;
                 }
