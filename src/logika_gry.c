@@ -47,7 +47,6 @@ void freeGame(GameState *state) {
     printf("Sukces: Pamiec mapy zwolniona bezpiecznie.\n");
 }
 
-// Zmienia pozycje gracza o podany wektor (dx, dy)
 void movePlayer(GameState *state, int dx, int dy) {
     int new_x = state->player_x + dx;
     int new_y = state->player_y + dy;
@@ -56,56 +55,73 @@ void movePlayer(GameState *state, int dx, int dy) {
 
     if (target_cell == '#') return;
 
-    if (target_cell == '$') {
+    // Obsluga pchania skrzyni (zwyklej '$' lub stojacej na celu '*')
+    if (target_cell == '$' || target_cell == '*') {
         int box_new_x = new_x + dx;
         int box_new_y = new_y + dy;
         char box_target = state->map[box_new_y][box_new_x];
 
         if (box_target == ' ' || box_target == '.') {
-            state->map[box_new_y][box_new_x] = '$'; 
+            // Skrzynia laduje na pustym polu lub na celu (staje sie zlota '*')
+            state->map[box_new_y][box_new_x] = (box_target == '.') ? '*' : '$';
             pushed_box = 1;
+            // Odkrywamy to, co bylo pod popchnieta skrzynia
+            target_cell = (target_cell == '*') ? '.' : ' '; 
         } else {
             return; 
         }
     }
 
-    // LISTA JEDNOKIERUNKOWA: Tworzymy nowy wezel historii
+    // Zapis do historii dla Undo
     MoveNode *node = (MoveNode *)malloc(sizeof(MoveNode));
     node->dx = dx;
     node->dy = dy;
     node->pushed_box = pushed_box;
     node->next = state->history;
-    state->history = node; // Doklejamy na poczatek listy
+    state->history = node;
 
-    state->map[state->player_y][state->player_x] = ' '; 
-    state->map[new_y][new_x] = '@';
+    // Gracz opuszcza aktualne pole (jesli stal na celu '+', zostawia cel '.')
+    char current_cell = state->map[state->player_y][state->player_x];
+    state->map[state->player_y][state->player_x] = (current_cell == '+') ? '.' : ' ';
+
+    // Gracz wchodzi na nowe pole (jesli to cel '.', staje sie '+')
+    state->map[new_y][new_x] = (target_cell == '.') ? '+' : '@';
     state->player_x = new_x;
     state->player_y = new_y;
 }
 
-// Funkcja cofajaca ruch uzywajaca listy jednokierunkowej
 void undoMove(GameState *state) {
-    if (state->history == NULL) return; // Brak ruchow do cofniecia
+    if (state->history == NULL) return;
 
-    MoveNode *node = state->history; // Pobieramy ostatni ruch
+    MoveNode *node = state->history;
 
-    // 1. Cofamy gracza
-    state->map[state->player_y][state->player_x] = ' ';
-    state->player_x -= node->dx;
-    state->player_y -= node->dy;
-    state->map[state->player_y][state->player_x] = '@';
+    // 1. Gracz schodzi z obecnego pola do tylu
+    char current_cell = state->map[state->player_y][state->player_x];
+    state->map[state->player_y][state->player_x] = (current_cell == '+') ? '.' : ' ';
 
-    // 2. Jesli pchalismy skrzynie, tez ja cofamy
+    // 2. Gracz wraca na poprzednie pole
+    int prev_x = state->player_x - node->dx;
+    int prev_y = state->player_y - node->dy;
+    char prev_target = state->map[prev_y][prev_x];
+    state->map[prev_y][prev_x] = (prev_target == '.') ? '+' : '@';
+
+    state->player_x = prev_x;
+    state->player_y = prev_y;
+
+    // 3. Cofanie skrzyni (jesli byla popchnieta)
     if (node->pushed_box) {
-        // Skrzynia uciekla na odleglosc 2*dx od starej pozycji, musimy ja wziac i cofnac
         int box_current_x = state->player_x + 2 * node->dx;
         int box_current_y = state->player_y + 2 * node->dy;
+        char box_cell = state->map[box_current_y][box_current_x];
         
-        state->map[box_current_y][box_current_x] = ' '; // Usuwamy skrzynie z nowej pozycji
-        state->map[state->player_y + node->dy][state->player_x + node->dx] = '$'; // Kladziemy przed graczem
+        // Zdejmujemy skrzynie z nowej pozycji
+        state->map[box_current_y][box_current_x] = (box_cell == '*') ? '.' : ' ';
+        
+        // Kladziemy ja z powrotem przed graczem
+        char box_return_cell = state->map[state->player_y + node->dy][state->player_x + node->dx];
+        state->map[state->player_y + node->dy][state->player_x + node->dx] = (box_return_cell == '.') ? '*' : '$';
     }
 
-    // 3. Usuwamy wezel z pamieci (dealokacja)
     state->history = node->next;
     free(node);
 }

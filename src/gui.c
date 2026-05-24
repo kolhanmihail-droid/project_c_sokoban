@@ -25,11 +25,9 @@ int initGUI(int width, int height) {
 }
 
 void renderGame(GameState *state) {
-    // 1. Czyscimy tlo na czarno
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // 2. Rysujemy kazdy kafelek
     for (int i = 0; i < state->height; i++) {
         for (int j = 0; j < state->width; j++) {
             SDL_Rect rect = { j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE };
@@ -41,16 +39,18 @@ void renderGame(GameState *state) {
             } else if (cell == '$') {
                 SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);   // Brazowa skrzynia
                 SDL_RenderFillRect(renderer, &rect);
+            } else if (cell == '*') { // NOWE: Skrzynia na celu
+                SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);   // Zlota skrzynia!
+                SDL_RenderFillRect(renderer, &rect);
             } else if (cell == '.') {
                 SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);     // Zielony cel
                 SDL_RenderFillRect(renderer, &rect);
-            } else if (cell == '@') {
+            } else if (cell == '@' || cell == '+') { // NOWE: Gracz obojetnie gdzie stoi
                 SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);     // Niebieski gracz
                 SDL_RenderFillRect(renderer, &rect);
             }
         }
     }
-    // 3. Pokazujemy namalowany obraz
     SDL_RenderPresent(renderer);
 }
 
