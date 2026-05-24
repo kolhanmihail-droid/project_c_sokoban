@@ -5,4 +5,8 @@
 // Funkcja zwraca 1 jesli sukces, 0 jesli blad
 int wczytajMape(GameState *state, const char *filename);
 
+
+void zapiszGre(GameState *state, const char *filename);
+void logAction(const char *message);
+
 #endif

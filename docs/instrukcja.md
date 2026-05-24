@@ -1,0 +1,1 @@
+Pełna instrukcja użytkownika, sterowanie oraz zasady kompilacji znajdują się w głównym pliku README.md w korzeniu projektu.

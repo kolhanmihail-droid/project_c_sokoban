@@ -34,3 +34,33 @@ int wczytajMape(GameState *state, const char *filename) {
     fclose(file);
     return 1;
 }
+
+// Funkcja zapisujaca obecny stan mapy do pliku
+void zapiszGre(GameState *state, const char *filename) {
+    FILE *file = fopen(filename, "w"); // "w" oznacza write (zapisz/nadpisz)
+    if (file == NULL) {
+        printf("BLAD: Nie mozna zapisac gry do pliku %s!\n", filename);
+        return;
+    }
+
+    for (int i = 0; i < state->height; i++) {
+        for (int j = 0; j < state->width; j++) {
+            fprintf(file, "%c", state->map[i][j]);
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
+    printf("SUKCES: Gra zostala zapisana w %s\n", filename);
+    logAction("Gracz zapisal stan gry."); // Automatyczny log
+}
+
+// Funkcja dopisujaca logi z gry (np. bledy lub dzialania)
+void logAction(const char *message) {
+    // "a" oznacza append (dopisz na koncu pliku)
+    FILE *file = fopen("logs/historia.log", "a"); 
+    if (file != NULL) {
+        fprintf(file, "[LOG]: %s\n", message);
+        fclose(file);
+    }
+}

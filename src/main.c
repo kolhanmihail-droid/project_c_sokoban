@@ -42,6 +42,7 @@ int main(int argc, char* argv[]) {
                     case SDLK_d:
                     case SDLK_RIGHT: movePlayer(&game, 1, 0); break;
                     case SDLK_z:     undoMove(&game); break;
+                    case SDLK_F5:    zapiszGre(&game, "saves/zapis.txt"); break; 
                     case SDLK_q:
                     case SDLK_ESCAPE: gramy = 0; break;
                 }
