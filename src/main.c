@@ -1,21 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/logika_gry.h"
+#include "../include/operacje_plikowe.h"
 
-int main(int argc, char *argv[]) {
-    printf("Witaj w projekcie Sokoban!\n");
-    
-    // Tworzymy nasza strukture
+int main() {
     GameState game;
     
-    // Inicjalizujemy gre - np. mapa 10 na 10
-    initGame(&game, 10, 10);
+    // Wczytujemy plik
+    if (!wczytajMape(&game, "assets/level1.txt")) {
+        return 1; // Konczymy gre jesli brak pliku
+    }
 
-    // ... (W przyszlosci tutaj bedzie kod wczytujacy mape z pliku) ...
+    // Testowy wydruk mapy w konsoli
+    printf("Mapa wczytana poprawnie! Pozycja gracza: X:%d, Y:%d\n\n", game.player_x, game.player_y);
+    for (int i = 0; i < game.height; i++) {
+        for (int j = 0; j < game.width; j++) {
+            printf("%c", game.map[i][j]);
+        }
+        printf("\n");
+    }
 
-    // Koniec gry, sprzatamy zeby nie bylo wyciekow pamieci!
     freeGame(&game);
-
-    printf("Koniec programu.\n");
     return 0;
 }
