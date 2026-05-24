@@ -4,7 +4,7 @@
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
-const int TILE_SIZE = 64; // Jeden kwadrat na mapie bedzie mial 64x64 piksele
+const int TILE_SIZE = 64;
 
 int initGUI(int width, int height) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -12,7 +12,7 @@ int initGUI(int width, int height) {
         return 0;
     }
     
-    // Tworzymy okno dopasowane do rozmiaru mapy
+    // Tworzy sie okno dopasowane do rozmiaru mapy
     window = SDL_CreateWindow("Sokoban - Projekt C", 
                               SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                               width * TILE_SIZE, height * TILE_SIZE, SDL_WINDOW_SHOWN);
@@ -21,7 +21,7 @@ int initGUI(int width, int height) {
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) return 0;
     
-    return 1; // Sukces
+    return 1; 
 }
 
 void renderGame(GameState *state) {
@@ -34,19 +34,19 @@ void renderGame(GameState *state) {
             char cell = state->map[i][j];
 
             if (cell == '#') {
-                SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); // Szary mur
+                SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255); // Szary--mur
                 SDL_RenderFillRect(renderer, &rect);
             } else if (cell == '$') {
-                SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);   // Brazowa skrzynia
+                SDL_SetRenderDrawColor(renderer, 139, 69, 19, 255);   // Brazowa--skrzynia
                 SDL_RenderFillRect(renderer, &rect);
-            } else if (cell == '*') { // NOWE: Skrzynia na celu
-                SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);   // Zlota skrzynia!
+            } else if (cell == '*') { // Skrzynia na celu
+                SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);   // Zlota--skrzynia
                 SDL_RenderFillRect(renderer, &rect);
             } else if (cell == '.') {
                 SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);     // Zielony cel
                 SDL_RenderFillRect(renderer, &rect);
-            } else if (cell == '@' || cell == '+') { // NOWE: Gracz obojetnie gdzie stoi
-                SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);     // Niebieski gracz
+            } else if (cell == '@' || cell == '+') { //  Gracz obojetnie gdzie stoi
+                SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);     // Niebieski--gracz
                 SDL_RenderFillRect(renderer, &rect);
             }
         }

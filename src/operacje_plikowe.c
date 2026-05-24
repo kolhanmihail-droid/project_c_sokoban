@@ -10,7 +10,7 @@ int wczytajMape(GameState *state, const char *filename) {
         return 0;
     }
 
-    // 1. SKANOWANIE PLIKU: Szukamy szerokosci i wysokosci
+    // SKANOWANIE PLIKU: Szukamy szerokosci i wysokosci
     int w = 0;
     int h = 0;
     char buffer[256];
@@ -18,7 +18,7 @@ int wczytajMape(GameState *state, const char *filename) {
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         h++; // Kazda linijka to nowy wiersz
         int len = 0;
-        // Liczymy znaki do momentu napotkania konca linii (Entera)
+        // Liczymy znaki do momentu napotkania konca linii 
         while (buffer[len] != '\0' && buffer[len] != '\n' && buffer[len] != '\r') {
             len++;
         }
@@ -27,10 +27,10 @@ int wczytajMape(GameState *state, const char *filename) {
         }
     }
 
-    // 2. ALOKACJA PAMIECI
+    // ALOKACJA PAMIECI
     initGame(state, w, h);
 
-    // 3. WCZYTYWANIE MAPY: Cofamy plik na poczatek i czytamy na gotowo
+    // WCZYTYWANIE MAPY: Cofamy plik na poczatek i czytamy na gotowo
     rewind(file); 
     int row = 0;
 
