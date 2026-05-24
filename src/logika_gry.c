@@ -40,3 +40,37 @@ void freeGame(GameState *state) {
     free(state->map);
     printf("Sukces: Pamiec mapy zwolniona bezpiecznie.\n");
 }
+
+// Zmienia pozycje gracza o podany wektor (dx, dy)
+void movePlayer(GameState *state, int dx, int dy) {
+    int new_x = state->player_x + dx;
+    int new_y = state->player_y + dy;
+
+    char target_cell = state->map[new_y][new_x];
+
+    // 1. Jesli uderzamy w sciane - koniec, nie ruszamy sie
+    if (target_cell == '#') return;
+
+    // 2. Jesli to skrzynia ($), sprawdzamy czy mozemy ja popchnac
+    if (target_cell == '$') {
+        int box_new_x = new_x + dx;
+        int box_new_y = new_y + dy;
+        char box_target = state->map[box_new_y][box_new_x];
+
+        // Skrzynie mozna popchnac tylko na puste pole (' ') lub cel ('.')
+        if (box_target == ' ' || box_target == '.') {
+            state->map[box_new_y][box_new_x] = '$'; // Nowa pozycja skrzyni
+            state->map[new_y][new_x] = ' ';         // Stara pozycja skrzyni staje sie pusta
+        } else {
+            return; // Za skrzynia jest sciana lub inna skrzynia, wiec gracz tez stoi
+        }
+    }
+
+    // 3. Ruch gracza (czyszczenie starej pozycji, ustawienie nowej)
+    state->map[state->player_y][state->player_x] = ' '; 
+    state->map[new_y][new_x] = '@';
+
+    // Aktualizacja wspolrzednych w strukturze
+    state->player_x = new_x;
+    state->player_y = new_y;
+}
