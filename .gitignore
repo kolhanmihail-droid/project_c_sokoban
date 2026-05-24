@@ -1,0 +1,16 @@
+# Skompilowane programy
+*.exe
+*.o
+*.out
+
+# Pliki systemowe i edytorow
+.vscode/
+.DS_Store
+
+# Ignoruj pliki wewnątrz folderów logs i saves, ale zachowaj same foldery
+logs/*
+saves/*
+
+# Wyjątek: zatrzymaj pliki .gitkeep, żeby Git "widział" puste foldery logs i saves
+!logs/.gitkeep
+!saves/.gitkeep
