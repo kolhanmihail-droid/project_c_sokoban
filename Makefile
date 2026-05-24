@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude
 
 # Pliki zrodlowe
-SRC = src/main.c src/logika_gry.c
+SRC = src/main.c src/logika_gry.c src/operacje_plikowe.c
 
 # Plik wynikowy
 EXEC = sokoban.exe
