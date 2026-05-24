@@ -5,6 +5,9 @@
 #include "../include/gui.h"
 
 int main(int argc, char* argv[]) {
+    (void)argc; // Ucisza ostrzezenie kompilatora
+    (void)argv; // Ucisza ostrzezenie kompilatora
+    
     // SYSTEM POZIOMOW
     const char* poziomy[] = {
         "assets/level1.txt", 
