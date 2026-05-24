@@ -22,6 +22,8 @@ Projekt wykorzystuje plik `Makefile` do automatyzacji budowania. Wymagane jest �
 * **Z** - Cofnięcie ostatniego ruchu (Nielimitowane Undo!)
 * **F5** - Zapisanie aktualnego stanu planszy (Zapis znajduje się w folderze `saves/`)
 * **Q / ESC** - Bezpieczne wyjście z gry
+* **N** - Nowy Poziom
+* **R** - Reset Poziomu 
 
 ## 📁 Struktura Projektu
 - `src/` - Kod źródłowy (`.c`)
