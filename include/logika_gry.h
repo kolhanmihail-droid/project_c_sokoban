@@ -14,4 +14,7 @@ typedef struct {
 void initGame(GameState *state, int w, int h);
 void freeGame(GameState *state);
 
+// NOWE: Funkcja do poruszania graczem
+void movePlayer(GameState *state, int dx, int dy);
+
 #endif
