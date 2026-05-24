@@ -1,18 +1,12 @@
-# Kompilator
 CC = gcc
-
-# Flagi kompilacji
 CFLAGS = -Wall -Wextra -Iinclude
+LDFLAGS = -lmingw32 -lSDL2main -lSDL2
 
-# Pliki zrodlowe
-SRC = src/main.c src/logika_gry.c src/operacje_plikowe.c
-
-# Plik wynikowy
+SRC = src/main.c src/logika_gry.c src/operacje_plikowe.c src/gui.c
 EXEC = sokoban.exe
 
-# Glowna regula
 all: $(EXEC)
 
-# Regula budowania
+# PAMIETAJ O TABULATORZE W LINII PONIZEJ!
 $(EXEC): $(SRC)
-	$(CC) $(CFLAGS) $(SRC) -o $(EXEC)
+	$(CC) $(CFLAGS) $(SRC) -o $(EXEC) $(LDFLAGS)
