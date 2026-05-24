@@ -28,11 +28,17 @@ void initGame(GameState *state, int w, int h) {
             state->map[i][j] = ' ';
         }
     }
+    state->history = NULL; // Na starcie lista historii jest pusta
     printf("Sukces: Zaalokowano pamiec na mape %dx%d.\n", w, h);
 }
 
 // Funkcja sprzatajaca pamiec po zakonczeniu gry
 void freeGame(GameState *state) {
+    while (state->history != NULL) {
+        MoveNode *temp = state->history;
+        state->history = state->history->next;
+        free(temp);
+    }
     // Zwalnianie idzie w odwrotnej kolejnosci - najpierw wiersze, potem glowna tablica
     for (int i = 0; i < state->height; i++) {
         free(state->map[i]); 
@@ -45,32 +51,61 @@ void freeGame(GameState *state) {
 void movePlayer(GameState *state, int dx, int dy) {
     int new_x = state->player_x + dx;
     int new_y = state->player_y + dy;
-
     char target_cell = state->map[new_y][new_x];
+    int pushed_box = 0;
 
-    // 1. Jesli uderzamy w sciane - koniec, nie ruszamy sie
     if (target_cell == '#') return;
 
-    // 2. Jesli to skrzynia ($), sprawdzamy czy mozemy ja popchnac
     if (target_cell == '$') {
         int box_new_x = new_x + dx;
         int box_new_y = new_y + dy;
         char box_target = state->map[box_new_y][box_new_x];
 
-        // Skrzynie mozna popchnac tylko na puste pole (' ') lub cel ('.')
         if (box_target == ' ' || box_target == '.') {
-            state->map[box_new_y][box_new_x] = '$'; // Nowa pozycja skrzyni
-            state->map[new_y][new_x] = ' ';         // Stara pozycja skrzyni staje sie pusta
+            state->map[box_new_y][box_new_x] = '$'; 
+            pushed_box = 1;
         } else {
-            return; // Za skrzynia jest sciana lub inna skrzynia, wiec gracz tez stoi
+            return; 
         }
     }
 
-    // 3. Ruch gracza (czyszczenie starej pozycji, ustawienie nowej)
+    // LISTA JEDNOKIERUNKOWA: Tworzymy nowy wezel historii
+    MoveNode *node = (MoveNode *)malloc(sizeof(MoveNode));
+    node->dx = dx;
+    node->dy = dy;
+    node->pushed_box = pushed_box;
+    node->next = state->history;
+    state->history = node; // Doklejamy na poczatek listy
+
     state->map[state->player_y][state->player_x] = ' '; 
     state->map[new_y][new_x] = '@';
-
-    // Aktualizacja wspolrzednych w strukturze
     state->player_x = new_x;
     state->player_y = new_y;
+}
+
+// Funkcja cofajaca ruch uzywajaca listy jednokierunkowej
+void undoMove(GameState *state) {
+    if (state->history == NULL) return; // Brak ruchow do cofniecia
+
+    MoveNode *node = state->history; // Pobieramy ostatni ruch
+
+    // 1. Cofamy gracza
+    state->map[state->player_y][state->player_x] = ' ';
+    state->player_x -= node->dx;
+    state->player_y -= node->dy;
+    state->map[state->player_y][state->player_x] = '@';
+
+    // 2. Jesli pchalismy skrzynie, tez ja cofamy
+    if (node->pushed_box) {
+        // Skrzynia uciekla na odleglosc 2*dx od starej pozycji, musimy ja wziac i cofnac
+        int box_current_x = state->player_x + 2 * node->dx;
+        int box_current_y = state->player_y + 2 * node->dy;
+        
+        state->map[box_current_y][box_current_x] = ' '; // Usuwamy skrzynie z nowej pozycji
+        state->map[state->player_y + node->dy][state->player_x + node->dx] = '$'; // Kladziemy przed graczem
+    }
+
+    // 3. Usuwamy wezel z pamieci (dealokacja)
+    state->history = node->next;
+    free(node);
 }
