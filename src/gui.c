@@ -59,3 +59,10 @@ void closeGUI() {
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
+
+void resizeWindow(int width, int height) {
+    if (window != NULL) {
+        SDL_SetWindowSize(window, width * TILE_SIZE, height * TILE_SIZE);
+        SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+    }
+}
